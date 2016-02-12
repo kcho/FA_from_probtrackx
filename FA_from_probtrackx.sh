@@ -1,13 +1,13 @@
-for subject in $@
+for i in $@
 do
-    echo ${subject}
-    echo ================
+    subject=/Volumes/CCNC_3T_2/kcho/ccnc/GHR_project/${i}
+    #echo ${subject}
     for side in lh rh
     do
-        echo ${side}
+        #echo ${side}
         tractDir=${subject}/tractography/${side}
         t1Img=${subject}/FREESURFER/mri/brain.nii.gz
-        faImg=${subject}/DTI/DTI_FA.nii.gz
+        faImg=${subject}/DTI/dti_FA.nii.gz
         waytotal=`cat ${tractDir}/waytotal`
         regMat=${subject}/registration/FREESURFERT1toNodif.mat
         wmMask=${subject}/ROI/${side}_wm_mask.nii.gz
@@ -15,7 +15,7 @@ do
         tcMask=${subject}/ROI/${side}_TC.nii.gz
 
 
-        fslmaths ${tractDir}/fdt_paths.nii.gz -div ${waytotal} -thrp 2 -bin -mul ${wmMask} ${tractDir}/fdt_threshold.nii.gz
+        fslmaths ${tractDir}/fdt_paths.nii.gz -div ${waytotal} -thrp 3 -bin -mul ${wmMask} ${tractDir}/fdt_threshold.nii.gz
 
         ## take FC TC out : equivalent to -mul ${wmMask}
 
@@ -29,11 +29,11 @@ do
             -interp nearestneighbour
 
         # FA
-        fslstats ${faImg} -k ${tractDir}/fdt_threshold_reg.nii.gz -M
+        echo ${i} ${side} `fslstats ${faImg} -k ${tractDir}/fdt_threshold_reg.nii.gz -M`
 
         # fslview
-        echo fslview ${wmMask} -l "Yellow" ${fcMask} -l "Red" ${tcMask} -l "Red" ${tractDir}/fdt_threshold.nii.gz -l "Green"
-        echo fslview ${faImg} ${tractDir}/fdt_threshold_reg.nii.gz -l "Green"
+        #echo fslview ${wmMask} -l "Yellow" ${fcMask} -l "Red" ${tcMask} -l "Red" ${tractDir}/fdt_threshold.nii.gz -l "Green"
+        #echo fslview ${faImg} ${tractDir}/fdt_threshold_reg.nii.gz -l "Green"
 
     done
 done
